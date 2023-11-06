@@ -68,6 +68,19 @@ public class ExpenseTrackerApp {
     view.toFront();
    }});
     
+    // Add action listener to the "undo" button
+    view.addUndoListener(e -> {
+      try{
+    	  controller.applyUndo();
+    }catch(IllegalStateException exception) {
+    	JOptionPane.showMessageDialog(view,exception.getMessage());
+    	view.toFront();
+   }});
+    
+    view.addTableSelectionListener(e->{
+    	int[] selectedRow = view.getTable().getSelectedRows();
+    	view.setSelectedRows(selectedRow);
+    });
 
   }
 }

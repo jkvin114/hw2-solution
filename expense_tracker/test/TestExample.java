@@ -90,7 +90,7 @@ public class TestExample {
         // Perform the action: Add and remove a transaction
 	double amount = 50.0;
 	String category = "food";
-        Transaction addedTransaction = new Transaction(amount, category);
+        Transaction addedTransaction = new Transaction(amount, category,0);
         model.addTransaction(addedTransaction);
     
         // Pre-condition: List of transactions contains only

@@ -1,6 +1,7 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -10,6 +11,7 @@ import java.text.NumberFormat;
 
 import model.Transaction;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class ExpenseTrackerView extends JFrame {
@@ -26,8 +28,12 @@ public class ExpenseTrackerView extends JFrame {
 
   private JTextField amountFilterField;
   private JButton amountFilterBtn;
-
   
+  
+  private JButton undoBtn;
+
+  private ListSelectionModel tableSelectionModel;
+  private int[] selectedRows=new int[] {};
 
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
@@ -39,6 +45,7 @@ public class ExpenseTrackerView extends JFrame {
     
     // Create table
     transactionsTable = new JTable(model);
+    tableSelectionModel = transactionsTable.getSelectionModel();
 
     addTransactionBtn = new JButton("Add Transaction");
 
@@ -62,8 +69,9 @@ public class ExpenseTrackerView extends JFrame {
     amountFilterField = new JTextField(10);
     amountFilterBtn = new JButton("Filter by Amount");
   
+    undoBtn = new JButton("Undo");
 
-  
+    undoBtn.setEnabled(false);
     // Layout components
     JPanel inputPanel = new JPanel();
     inputPanel.add(amountLabel);
@@ -75,6 +83,7 @@ public class ExpenseTrackerView extends JFrame {
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(amountFilterBtn);
     buttonPanel.add(categoryFilterBtn);
+    buttonPanel.add(undoBtn);
   
     // Add panels to frame
     add(inputPanel, BorderLayout.NORTH);
@@ -86,13 +95,15 @@ public class ExpenseTrackerView extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
   
-  
   }
 
   public DefaultTableModel getTableModel() {
     return model;
   }
-    
+  public JTable getTable() {
+	  return transactionsTable;
+  }
+   
 
   public JTable getTransactionsTable() {
     return transactionsTable;
@@ -123,6 +134,8 @@ public class ExpenseTrackerView extends JFrame {
   public void addApplyCategoryFilterListener(ActionListener listener) {
     categoryFilterBtn.addActionListener(listener);
   }
+  
+  
 
   public String getCategoryFilterInput() {
     return JOptionPane.showInputDialog(this, "Enter Category Filter:");
@@ -132,6 +145,7 @@ public class ExpenseTrackerView extends JFrame {
   public void addApplyAmountFilterListener(ActionListener listener) {
     amountFilterBtn.addActionListener(listener);
   }
+  
 
   public double getAmountFilterInput() {
     String input = JOptionPane.showInputDialog(this, "Enter Amount Filter:");
@@ -143,7 +157,35 @@ public class ExpenseTrackerView extends JFrame {
         return 0.0; // Default value (or any other appropriate value)
     }
   }
+  public void setSelectedRows(int[] selected) {
+	  selectedRows=selected;
+	  if(selected.length==0) {
+		  undoBtn.setEnabled(false);
+	  }
+	  else {
+		  undoBtn.setEnabled(true);
+	  }
+  }
+  public HashSet<Integer> getSelectedTransactions() {
+	  HashSet<Integer> ids=new HashSet<Integer>();
+	  for(int i=0;i<selectedRows.length;i++) {
+		 ids.add((Integer) model.getValueAt(selectedRows[i], 0)) ;
+	  }
+	  return ids;
+  }
+  
+  public void addUndoListener(ActionListener listener) {
+	    undoBtn.addActionListener(listener);
+  }
+  public void applyUndo(List<Transaction> transactions) {
+	  refreshTable(transactions);
+	  selectedRows=new int[] {};
+  }
+  public void addTableSelectionListener(ListSelectionListener listener) {
+	    tableSelectionModel.addListSelectionListener(listener);
+  }
 
+  
   public void refreshTable(List<Transaction> transactions) {
       // Clear existing rows
       model.setRowCount(0);
@@ -157,7 +199,7 @@ public class ExpenseTrackerView extends JFrame {
   
       // Add rows from transactions list
       for(Transaction t : transactions) {
-        model.addRow(new Object[]{rowNum+=1,t.getAmount(), t.getCategory(), t.getTimestamp()}); 
+        model.addRow(new Object[]{t.getId(),t.getAmount(), t.getCategory(), t.getTimestamp()}); 
       }
       // Add total row
       Object[] totalRow = {"Total", null, null, totalCost};
@@ -165,7 +207,6 @@ public class ExpenseTrackerView extends JFrame {
   
       // Fire table update
       transactionsTable.updateUI();
-  
     }  
   
 

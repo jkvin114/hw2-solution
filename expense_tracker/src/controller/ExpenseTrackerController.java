@@ -3,6 +3,7 @@ package controller;
 import view.ExpenseTrackerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -22,9 +23,11 @@ public class ExpenseTrackerController {
    */
   private TransactionFilter filter;
 
+  private int tranCount;
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
+    this.tranCount=0;
   }
 
   public void setFilter(TransactionFilter filter) {
@@ -45,9 +48,10 @@ public class ExpenseTrackerController {
       return false;
     }
     
-    Transaction t = new Transaction(amount, category);
+    Transaction t = new Transaction(amount, category,tranCount);
+    this.tranCount++;
     model.addTransaction(t);
-    view.getTableModel().addRow(new Object[]{t.getAmount(), t.getCategory(), t.getTimestamp()});
+    view.getTableModel().addRow(new Object[]{t.getId(),t.getAmount(), t.getCategory(), t.getTimestamp()});
     refresh();
     return true;
   }
@@ -71,5 +75,12 @@ public class ExpenseTrackerController {
       JOptionPane.showMessageDialog(view, "No filter applied");
       view.toFront();}
 
+  }
+  
+  public void applyUndo() {
+	  HashSet<Integer> trans=view.getSelectedTransactions();
+	  if(trans.size()==0) throw new IllegalStateException("No transactions are selected!");
+	  model.removeTransactionsById(trans);
+	  view.applyUndo(model.getTransactions());
   }
 }

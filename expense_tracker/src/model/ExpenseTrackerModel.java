@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class ExpenseTrackerModel {
@@ -23,6 +24,15 @@ public class ExpenseTrackerModel {
 
   public void removeTransaction(Transaction t) {
     transactions.remove(t);
+  }
+  public void removeTransactionsById(HashSet<Integer> ids) {
+	  List<Transaction> newlist = new ArrayList<>(); 
+	  for(Transaction tran : transactions) {
+		  if(!ids.contains(tran.getId())){
+			  newlist.add(tran);
+		  }
+	  }
+	  transactions=newlist;
   }
 
   public List<Transaction> getTransactions() {
