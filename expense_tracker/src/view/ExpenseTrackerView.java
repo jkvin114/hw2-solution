@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 
 import model.Transaction;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -35,7 +36,10 @@ public class ExpenseTrackerView extends JFrame {
 
   private ListSelectionModel tableSelectionModel;
   private int[] selectedRows=new int[] {};
-
+  private JOptionPane dialogPane;
+  private JDialog dialog;
+  
+  private final Color HIGHLIGHT_COLOR=new Color(173, 255, 168);
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
     setSize(600, 400); // Make GUI larger
@@ -47,7 +51,7 @@ public class ExpenseTrackerView extends JFrame {
     // Create table
     transactionsTable = new JTable(model);
     tableSelectionModel = transactionsTable.getSelectionModel();
-
+    
     addTransactionBtn = new JButton("Add Transaction");
 
     // Create UI components
@@ -90,12 +94,41 @@ public class ExpenseTrackerView extends JFrame {
     add(inputPanel, BorderLayout.NORTH);
     add(new JScrollPane(transactionsTable), BorderLayout.CENTER); 
     add(buttonPanel, BorderLayout.SOUTH);
-  
+    dialogPane=new JOptionPane();
+    dialog=dialogPane.createDialog(this, "Message");
+    
+    
     // Set frame properties
     setSize(600, 400); // Increase the size for better visibility
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
   
+  }
+ 
+  public void showDialog(String msg) {
+	  dialogPane.setMessage(msg);
+	  dialog.setVisible(true);
+	  System.out.print("dialog");
+  }
+  
+  /**
+   * return if the message dialog is visible
+   * @param msg
+   */
+  public boolean isDialogVisible() {
+	  return dialog.isActive();
+  }
+  public String getDialogMessage() {
+	  return (String) dialogPane.getMessage();
+  }
+  public int[] getHighlightedRows() {
+	  return transactionsTable.getSelectedRows();
+  }
+  public boolean isRowHighlighted(int row) {
+	  for(int r:getHighlightedRows()) {
+		  if(r==row) return true;
+	  }
+	  return false;
   }
 
   public DefaultTableModel getTableModel() {
@@ -166,6 +199,7 @@ public class ExpenseTrackerView extends JFrame {
   }
   public void setSelectedRows(int[] selected) {
 	  selectedRows=selected;
+	  System.out.print(selected.length);
 	  if(selected.length==0) {
 		  undoBtn.setEnabled(false);
 	  }
@@ -223,23 +257,32 @@ public class ExpenseTrackerView extends JFrame {
 
 
   public void highlightRows(List<Integer> rowIndexes) {
+	  for(int row:rowIndexes) {
+		  transactionsTable.getSelectionModel().addSelectionInterval(row, row);
+	  }
+	  
+	  transactionsTable.repaint();
+	  
+	  return;
       // The row indices are being used as hashcodes for the transactions.
       // The row index directly maps to the the transaction index in the list.
-      transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-          @Override
-          public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                        boolean hasFocus, int row, int column) {
-              Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-              if (rowIndexes.contains(row)) {
-                  c.setBackground(new Color(173, 255, 168)); // Light green
-              } else {
-                  c.setBackground(table.getBackground());
-              }
-              return c;
-          }
-      });
+//      transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+//          @Override
+//          public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+//                                                        boolean hasFocus, int row, int column) {
+//              Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//              if (rowIndexes.contains(row)) {
+//            	  c.setEnabled(true);
+//               //   c.setBackground(HIGHLIGHT_COLOR); // Light green
+//              } else {
+//            	  c.setEnabled(false);
+//               //   c.setBackground(table.getBackground());
+//              }
+//              return c;
+//          }
+//      });
 
-      transactionsTable.repaint();
+      
   }
 
 

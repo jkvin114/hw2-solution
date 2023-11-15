@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 
 import model.ExpenseTrackerModel;
 import model.Transaction;
+import model.Filter.AmountFilter;
+import model.Filter.CategoryFilter;
 import model.Filter.TransactionFilter;
 
 public class ExpenseTrackerController {
@@ -29,6 +31,73 @@ public class ExpenseTrackerController {
     this.view = view;
     this.tranCount=0;
   }
+  
+  public void addEventListeners() {
+
+	    // Handle add transaction button clicks
+	    view.getAddTransactionBtn().addActionListener(e -> {
+	      // Get transaction data from view
+	      double amount = view.getAmountField();
+	      String category = view.getCategoryField();
+	      
+	      // Call controller to add transaction
+	      boolean added = this.addTransaction(amount, category);
+	      
+	      if (!added) {
+	    	  view.showDialog("Invalid amount or category entered");
+	      //  JOptionPane.showMessageDialog(view, "Invalid amount or category entered");
+	        view.toFront();
+	      }
+	    });
+
+	      // Add action listener to the "Apply Category Filter" button
+	    view.addApplyCategoryFilterListener(e -> {
+	      try{
+	      String categoryFilterInput = view.getCategoryFilterInput();
+	      CategoryFilter categoryFilter = new CategoryFilter(categoryFilterInput);
+	      if (categoryFilterInput != null) {
+	          // controller.applyCategoryFilter(categoryFilterInput);
+	          this.setFilter(categoryFilter);
+	          this.applyFilter();
+	      }
+	     }catch(IllegalArgumentException exception) {
+	    	 System.out.print("cate");
+	    	 view.showDialog(exception.getMessage());
+	 //   JOptionPane.showMessageDialog(view, exception.getMessage());
+	    view.toFront();
+	   }});
+
+
+	    // Add action listener to the "Apply Amount Filter" button
+	    view.addApplyAmountFilterListener(e -> {
+	      try{
+	      double amountFilterInput = view.getAmountFilterInput();
+	      AmountFilter amountFilter = new AmountFilter(amountFilterInput);
+	      if (amountFilterInput != 0.0) {
+	          this.setFilter(amountFilter);
+	          this.applyFilter();
+	      }
+	    }catch(IllegalArgumentException exception) {
+	    	view.showDialog(exception.getMessage());
+	  //  JOptionPane.showMessageDialog(view,exception.getMessage());
+	    view.toFront();
+	   }});
+	    
+	    // Add action listener to the "undo" button
+	    view.addUndoListener(e -> {
+	      try{
+	    	  this.applyUndo();
+	    }catch(IllegalStateException exception) {
+	    	view.showDialog(exception.getMessage());
+	    	//JOptionPane.showMessageDialog(view,exception.getMessage());
+	    	view.toFront();
+	   }});
+	    
+	    view.addTableSelectionListener(e->{
+	    	int[] selectedRow = view.getTable().getSelectedRows();
+	    	view.setSelectedRows(selectedRow);
+	    });
+  }
 
   public void setFilter(TransactionFilter filter) {
     // Sets the Strategy class being used in the applyFilter method.
@@ -42,10 +111,12 @@ public class ExpenseTrackerController {
 
   public boolean addTransaction(double amount, String category) {
     if (!InputValidation.isValidAmount(amount)) {
+    	view.showDialog("Invalid Amount");
       return false;
     }
     if (!InputValidation.isValidCategory(category)) {
-      return false;
+    	view.showDialog("Invalid Category");
+    	return false;
     }
     
     Transaction t = new Transaction(amount, category,tranCount);
@@ -72,8 +143,10 @@ public class ExpenseTrackerController {
       view.highlightRows(rowIndexes);
     }
     else{
-      JOptionPane.showMessageDialog(view, "No filter applied");
-      view.toFront();}
+    	view.showDialog("No filter applied");
+     // JOptionPane.showMessageDialog(view, "No filter applied");
+      view.toFront();
+      }
 
   }
   

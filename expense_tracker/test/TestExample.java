@@ -26,6 +26,8 @@ public class TestExample {
     model = new ExpenseTrackerModel();
     view = new ExpenseTrackerView();
     controller = new ExpenseTrackerController(model, view);
+    controller.addEventListeners();
+    
   }
 
     public double getTotalCost() {
@@ -60,13 +62,14 @@ public class TestExample {
 
     @Test
     public void testAddTransaction() {
+    	
     	//TODO: ADD VIEW TESTING!!
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
     
         // Perform the action: Add a transaction
-	double amount = 50.0;
-	String category = "food";
+        double amount = 50.0;
+        String category = "food";
         assertTrue(controller.addTransaction(amount, category));
     
         // Post-condition: List of transactions contains only
@@ -79,26 +82,31 @@ public class TestExample {
 	
 	// Check the total amount
         assertEquals(amount, getTotalCost(), 0.01);
-        setup();
+        
     }
     
     @Test
     public void testInvalidInputHandling() {
-    // Pre-condition: List of transactions is empty
-    assertEquals(0, model.getTransactions().size());
-
-    // Perform the action: Add and remove a transaction
-	double amount = 1100.0;
-	String category = "";
-    //Transaction addedTransaction = new Transaction(amount, category,0);
-    assertEquals(false,controller.addTransaction(amount,category));
-    
-    //Check if its throwing an error correctly..
-    
-    // Post-condition: List of transactions stays empty
-    assertEquals(0, model.getTransactions().size());
-    
+	    // Pre-condition: List of transactions is empty
+	    assertEquals(0, model.getTransactions().size());
+	
+	    // Perform the action: Add and remove a transaction
+		double amount = 1100.0;
+		String category = "";
+		double prevtotal=getTotalCost();
+	    //Transaction addedTransaction = new Transaction(amount, category,0);
+	    assertEquals(false,controller.addTransaction(amount,category));
+	    
+	    //Check if its throwing an error correctly..
+	    
+	    // Post-condition: List of transactions stays empty
+	    assertEquals(0, model.getTransactions().size());
+	    assertEquals(prevtotal, getTotalCost(), 0.01);
+	   // assertEquals(view.isDialogVisible(),true);
+	//    assertEquals(view.getDialogMessage(),"Invalid category filter");
     }
+    
+    
     @Test
     public void testFilterByAmount() {
     // Pre-condition: List of transactions is empty
@@ -119,7 +127,9 @@ public class TestExample {
     controller.setFilter(categoryFilter);
     //Set the filter.
     controller.applyFilter();
-    
+    assertTrue(view.isRowHighlighted(0));
+    assertFalse(view.isRowHighlighted(1));
+    assertTrue(view.isRowHighlighted(2));
     //check if certain rows are highlighted.
     setup(); //reset the controller, model, and view. 
     
