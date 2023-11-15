@@ -199,8 +199,10 @@ public class ExpenseTrackerView extends JFrame {
   }
   public void setSelectedRows(int[] selected) {
 	  selectedRows=selected;
-	  System.out.print(selected.length);
 	  if(selected.length==0) {
+		  undoBtn.setEnabled(false);
+	  }//if the only selected row is the last row(which displays total and should not be undo-ed)
+	  else if(selected.length==1 && selected[0]>= model.getRowCount()-1) {
 		  undoBtn.setEnabled(false);
 	  }
 	  else {
@@ -209,7 +211,12 @@ public class ExpenseTrackerView extends JFrame {
   }
   public HashSet<Integer> getSelectedTransactions() {
 	  HashSet<Integer> ids=new HashSet<Integer>();
+	  
 	  for(int i=0;i<selectedRows.length;i++) {
+		  
+		 //ignore the last row(which displays total and should not be undo-ed)
+		 if(selectedRows[i]>=model.getRowCount()-1) continue;
+		 
 		 ids.add((Integer) model.getValueAt(selectedRows[i], 0)) ;
 	  }
 	  return ids;

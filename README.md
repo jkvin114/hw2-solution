@@ -13,6 +13,8 @@
         - if`selectedRows` has more than 0 rows, enables undo button. otherwise, disable it.
     - if undo button is clicked, `getSelectedTransactions()` method returns list of selected transactions’ id as a HashSet
     - `applyUndo()`  method will refresh the table, and clear `selectedRows`.
+    - Filtering no longer changes the color of the row. Instead, it "selects" the corresponding rows. In this way, it becomes compatiable with undo selection, and user is able to select rows by filter and undo all selections directly.
+    - The last row, which displays the total, should not be undo-ed. Therefore, the undo button is inactive when the last row is only row that is selected. Also, When multiple rows are selected, the last row is always ignored when performing the undo.
 - model changes
     - implement `removeTransactionsById()` method that takes list of ids of transactions, and remove those transactions from the list.
 - controller changes
