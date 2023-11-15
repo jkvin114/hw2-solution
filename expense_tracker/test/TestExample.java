@@ -27,7 +27,7 @@ public class TestExample {
     view = new ExpenseTrackerView();
     controller = new ExpenseTrackerController(model, view);
     controller.addEventListeners();
-    
+    view.setToTestMode();
   }
 
     public double getTotalCost() {
@@ -102,8 +102,10 @@ public class TestExample {
 	    // Post-condition: List of transactions stays empty
 	    assertEquals(0, model.getTransactions().size());
 	    assertEquals(prevtotal, getTotalCost(), 0.01);
-	   // assertEquals(view.isDialogVisible(),true);
-	//    assertEquals(view.getDialogMessage(),"Invalid category filter");
+	    assertEquals(view.isDialogVisible(),true);
+	    assertEquals(view.getDialogMessage(),"Invalid Amount");
+	    setup(); //reset the controller, model, and view. 
+
     }
     
     

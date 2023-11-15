@@ -40,6 +40,9 @@ public class ExpenseTrackerView extends JFrame {
   private JDialog dialog;
   
   private final Color HIGHLIGHT_COLOR=new Color(173, 255, 168);
+  
+  private boolean isTestMode=false;
+  private boolean isDialogShown=false;
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
     setSize(600, 400); // Make GUI larger
@@ -107,16 +110,33 @@ public class ExpenseTrackerView extends JFrame {
  
   public void showDialog(String msg) {
 	  dialogPane.setMessage(msg);
-	  dialog.setVisible(true);
-	  System.out.print("dialog");
+	  if(!isTestMode)
+		  dialog.setVisible(true);
+	  else
+		  isDialogShown=true;
   }
   
+  public void closeDialog() {
+	  if(!isTestMode)
+		  dialog.setVisible(false);
+	  else
+		  isDialogShown=false;
+  }
+
+  
+  /***
+   * set the view to test mode.
+   * in test mode, it does not display a real dialog. instead sidplaying dialog sets "isDialogShown" to true.
+   */
+  public void setToTestMode() {
+	  isTestMode=true;
+  }
   /**
    * return if the message dialog is visible
    * @param msg
    */
   public boolean isDialogVisible() {
-	  return dialog.isActive();
+	  return isDialogShown;
   }
   public String getDialogMessage() {
 	  return (String) dialogPane.getMessage();
