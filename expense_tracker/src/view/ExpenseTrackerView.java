@@ -150,6 +150,9 @@ public class ExpenseTrackerView extends JFrame {
 	  }
 	  return false;
   }
+  public boolean isUndoButtonActive() {
+	  return undoBtn.isEnabled();
+  }
 
   public DefaultTableModel getTableModel() {
     return model;

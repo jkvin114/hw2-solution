@@ -61,7 +61,6 @@ public class ExpenseTrackerController {
 	          this.applyFilter();
 	      }
 	     }catch(IllegalArgumentException exception) {
-	    	 System.out.print("cate");
 	    	 view.showDialog(exception.getMessage());
 	 //   JOptionPane.showMessageDialog(view, exception.getMessage());
 	    view.toFront();

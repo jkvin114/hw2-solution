@@ -15,6 +15,8 @@
     - `applyUndo()`  method will refresh the table, and clear `selectedRows`.
     - Filtering no longer changes the color of the row. Instead, it "selects" the corresponding rows. In this way, it becomes compatiable with undo selection, and user is able to select rows by filter and undo all selections directly.
     - The last row, which displays the total, should not be undo-ed. Therefore, the undo button is inactive when the last row is only row that is selected. Also, When multiple rows are selected, the last row is always ignored when performing the undo.
+    - Changes when testing
+        - when the view is set to "test mode", it does not really shows the dialog, because showing a dialog will pause the whole application. Instead, when the `showDialog()` function is called, it sets `isDialogShown` field to true, which is used for detecting if the dialog is visible on test-time.
 - model changes
     - implement `removeTransactionsById()` method that takes list of ids of transactions, and remove those transactions from the list.
 - controller changes

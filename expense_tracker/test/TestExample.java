@@ -2,6 +2,7 @@
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class TestExample {
         assertNotNull(nowDate);
         // They may differ by 60 ms
         assertTrue(nowDate.getTime() - transactionDate.getTime() < 60000);
+
     }
 
 
@@ -77,12 +79,12 @@ public class TestExample {
         assertEquals(1, model.getTransactions().size());
     
         // Check the contents of the list
-	Transaction firstTransaction = model.getTransactions().get(0);
-	checkTransaction(amount, category, firstTransaction);
+        Transaction firstTransaction = model.getTransactions().get(0);
+		checkTransaction(amount, category, firstTransaction);
 	
 	// Check the total amount
         assertEquals(amount, getTotalCost(), 0.01);
-        
+
     }
     
     @Test
@@ -168,6 +170,97 @@ public class TestExample {
         // Check the total cost after removing the transaction
         double totalCost = getTotalCost();
         assertEquals(0.00, totalCost, 0.01);
+	    setup(); //reset the controller, model, and view. 
+
     }
+    
+    // Post-condition: undo throws exception
+    @Test(expected = IllegalStateException.class)
+    public void testUndoDisallowedEmptySelection() {
+	    setup(); //reset the controller, model, and view. 
+	    // Pre-condition: no rows are selected
+	    assertEquals(view.getHighlightedRows().length, 0);
+
+		 //  undo button is inactive
+		    assertFalse(view.isUndoButtonActive());
+	    // Perform the action: attempt undo(should throw exception)
+	    controller.applyUndo();
+	    setup(); //reset the controller, model, and view. 
+
+	    
+    }
+    
+    // Post-condition: undo throws exception
+    @Test(expected = IllegalStateException.class)
+    public void testUndoDisallowedLastRowOnly() {
+	    setup(); //reset the controller, model, and view. 
+	    
+        controller.addTransaction(20,"food");
+        
+        assertEquals(1, model.getTransactions().size());
+        
+        
+	    // Pre-condition: only the last row is selected(which should not be undo-ed)
+        List<Integer> selected = new ArrayList<Integer>();
+        selected.add(1);
+	    view.highlightRows(selected);
+        assertEquals(view.getHighlightedRows().length, 1);
+     //  undo button is inactive
+        assertFalse(view.isUndoButtonActive());
+	    
+	    // Perform the action: attempt undo (should throw exception)
+	    controller.applyUndo();
+	    
+	    setup(); //reset the controller, model, and view. 
+
+	    
+    }
+
+
+    @Test
+    public void testUndoAllowed() {
+	    setup(); //reset the controller, model, and view. 
+	    
+        controller.addTransaction(1, "food"); //id=1
+        controller.addTransaction(1, "food"); //id=2
+        controller.addTransaction(1, "food"); //id=3
+        controller.addTransaction(1, "food"); //id=4
+        //total cost =4
+	    assertEquals(getTotalCost(),4,0.001);
+	    
+        List<Integer> selected = new ArrayList<Integer>();
+        selected.add(1);
+        //simulate row selection
+	    view.highlightRows(selected);
+	    
+	    assertEquals(view.getHighlightedRows().length, 1);
+	    assertEquals(view.getSelectedTransactions().size(), 1);
+	    //id of the selected transaction is 1
+	    assertTrue(view.getSelectedTransactions().contains(1));
+	    
+	    // Perform the action: attempt undo 
+	    controller.applyUndo();
+	    
+	    // Post-condition: no highlighted rows remaining
+	    assertEquals(view.getHighlightedRows().length, 0);
+	    assertEquals(view.getSelectedTransactions().size(), 0);
+	    
+	    
+	    //total cost recalculated
+	    assertEquals(getTotalCost(), 3,0.001);
+	    
+	    // Post-condition: 3 transactions left
+	    assertEquals( model.getTransactions().size(), 3);
+	    
+	    // Post-condition: transaction with id=1 is removed and does not exist
+	    for(Transaction tran: model.getTransactions()) {
+	    	assertNotEquals(1, tran.getId());
+	    }
+	    
+	    setup(); //reset the controller, model, and view. 
+
+	    
+    }
+    
     
 }
