@@ -1,3 +1,20 @@
+#Features Added. in the TestExample.java, added the following tests:
+1. Add Transaction:
+- Steps: Add a transaction with amount 50.00 and category ”food”
+- Expected Output: Transaction is added to the table, Total Cost is updated
+2. Invalid Input Handling:
+- Steps: Attempt to add a transaction with an invalid amount or category
+- Expected Output: Error messages are displayed, transactions and Total Cost remain unchanged
+3. Filter by Amount:
+- Steps: Add multiple transactions with different amounts, apply amount filter
+- Expected Output: Only transactions matching the amount are returned (and will be highlighted)
+4. Filter by Category:
+- Steps: Add multiple transactions with different categories, apply category filter
+- Expected Output: Only transactions matching the category are returned (and will be highlighted)
+5. Undo Disallowed:
+- Steps: Attempt to undo when the transactions list is empty
+- Expected Output: Either UI widget is disabled or an error code (exception) is returned (thrown).
+
 # hw1- Manual Review
 
 The homework will be based on this project named "Expense Tracker",where users will be able to add/remove daily transaction. 

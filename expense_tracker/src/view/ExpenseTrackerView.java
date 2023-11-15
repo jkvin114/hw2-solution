@@ -25,6 +25,7 @@ public class ExpenseTrackerView extends JFrame {
   // private JTextField dateFilterField;
   private JTextField categoryFilterField;
   private JButton categoryFilterBtn;
+  private boolean joptionpane_shown;
 
   private JTextField amountFilterField;
   private JButton amountFilterBtn;
@@ -99,6 +100,12 @@ public class ExpenseTrackerView extends JFrame {
 
   public DefaultTableModel getTableModel() {
     return model;
+  }
+  public void setJOptionPaneShown(boolean input) {
+	  this.joptionpane_shown = input;
+  }
+  public boolean getJOptionPaneShown() {
+	  return this.joptionpane_shown;
   }
   public JTable getTable() {
 	  return transactionsTable;
